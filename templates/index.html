@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Attendance Tracker Sheet</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f1117;
+            --bg-card: #1a1d27;
+            --accent: #0078D7;
+            --accent-hover: #005b9f;
+            --success: #2ea043;
+            --warning: #f39c12;
+            --error: #e74c3c;
+            --purple: #0078D7;
+            --text-primary: #e8e8f0;
+            --text-secondary: #8b8da3;
+            --border: #2a2d3a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ── Header ───────────────────────────────────── */
+        .header {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+
+        .header img {
+            height: 70px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 120, 215, 0.2);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .separator {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0 40px 30px;
+        }
+
+        /* ── Filter Form ──────────────────────────────── */
+        .form-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px 32px;
+            max-width: 560px;
+            margin: 0 auto 30px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-group input[type="date"],
+        .form-group select {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        .form-group input[type="date"]:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+        }
+
+        .form-group select option {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* ── Buttons ──────────────────────────────────── */
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 32px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-accent:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-download {
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-download:hover {
+            background: #27ae60;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* ── Data Section ─────────────────────────────── */
+        .data-section {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 0 30px 60px;
+        }
+
+        .data-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .data-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .data-header .subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .alert-dark {
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            color: var(--warning);
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 14px;
+        }
+
+        /* ── Table ────────────────────────────────────── */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        thead th {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 14px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody td {
+            padding: 13px 20px;
+            font-size: 14px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(108, 99, 255, 0.04);
+        }
+
+        .badge-class {
+            background: rgba(108, 99, 255, 0.15);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .total-count {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .total-count strong {
+            color: var(--accent);
+        }
+
+        /* ── Email Section (Step 5) ───────────────────── */
+        .email-section {
+            background: var(--bg-card);
+            border: 1px solid rgba(162, 155, 254, 0.3);
+            border-radius: 12px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .email-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 22px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .email-section-header:hover {
+            background: rgba(162, 155, 254, 0.06);
+        }
+
+        .email-section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--purple);
+        }
+
+        .email-section-sub {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-left: 4px;
+        }
+
+        .email-toggle-icon {
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: transform 0.25s;
+        }
+
+        .email-toggle-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .email-body {
+            display: none;
+            padding: 0 22px 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .email-body.open {
+            display: block;
+        }
+
+        .email-desc {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin: 16px 0 0;
+        }
+
+        .email-fields {
+            display: flex;
+            gap: 14px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .email-field {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .email-field label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-secondary);
+        }
+
+        .email-field input {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        .email-field input:focus {
+            border-color: var(--purple);
+        }
+
+        .email-field .hint {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .email-field .hint a {
+            color: var(--purple);
+        }
+
+        .btn-send-email {
+            background: linear-gradient(135deg, #a29bfe, #6c63ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-send-email:hover:not(:disabled) {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .btn-send-email:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .email-spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Results */
+        .email-results {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .email-summary-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .email-summary-pill {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .pill-total {
+            background: rgba(162, 155, 254, 0.12);
+            color: var(--purple);
+        }
+
+        .pill-sent {
+            background: rgba(46, 204, 113, 0.12);
+            color: var(--success);
+        }
+
+        .pill-failed {
+            background: rgba(225, 112, 85, 0.12);
+            color: var(--error);
+        }
+
+        .email-result-list {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .email-result-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            gap: 10px;
+        }
+
+        .email-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .result-email {
+            color: var(--text-secondary);
+            font-size: 12px;
+            flex: 1.4;
+            min-width: 120px;
+        }
+
+        .result-badge {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .badge-present {
+            background: rgba(46, 204, 113, 0.15);
+            color: var(--success);
+        }
+
+        .badge-absent {
+            background: rgba(225, 112, 85, 0.15);
+            color: var(--error);
+        }
+
+        .badge-error {
+            background: rgba(225, 112, 85, 0.1);
+            color: var(--error);
+        }
+
+        .badge-skipped {
+            background: rgba(162, 155, 254, 0.1);
+            color: var(--purple);
+        }
+
+        .email-error-msg {
+            background: rgba(225, 112, 85, 0.1);
+            border: 1px solid rgba(225, 112, 85, 0.3);
+            color: var(--error);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            margin-top: 14px;
+            line-height: 1.7;
+        }
+
+        .email-error-msg a {
+            color: #ff8b77;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="{{ url_for('static', filename='Snapify_Logo.jpeg') }}" alt="Snapify Logo">
+        <h1>Snapify</h1>
+        <p>Webcam-Based Attendance System Dashboard</p>
+    </div>
+    <hr class="separator">
+
+    <div style="display:flex;justify-content:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+        <a href="/"
+            style="background:var(--accent);color:white;border:1px solid var(--accent);border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;text-decoration:none;">📊
+            Attendance Tracker</a>
+        <a href="/students"
+            style="background:var(--bg-card);color:var(--text-secondary);border:1px solid var(--border);border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;text-decoration:none;transition:all 0.2s;"
+            onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+            onmouseout="this.style.color='var(--text-secondary)';this.style.borderColor='var(--border)'">👥 Student
+            List</a>
+    </div>
+
+    <form action="/attendance" method="POST" class="form-card" id="attn-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="selected_date">Select Date</label>
+                <input type="date" id="selected_date" name="selected_date" required value="{{ selected_date }}">
+            </div>
+            <div class="form-group">
+                <label for="selected_class">Class / Period</label>
+                <select id="selected_class" name="selected_class">
+                    <option value="All" {% if selected_class=='All' or not selected_class %}selected{% endif %}>All
+                        Periods</option>
+                    {% for cls in classes %}
+                    <option value="{{ cls }}" {% if selected_class==cls %}selected{% endif %}>{{ cls }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="btn-row">
+            <button type="submit" class="btn-accent">Show Attendance</button>
+            <button type="submit" formaction="/delete_attendance" formnovalidate class="btn-accent"
+                style="background:var(--error); margin-left: 10px;"
+                onclick="return confirm('Are you sure you want to delete all attendance for the selected date and class?');">Refresh
+                / Clear</button>
+        </div>
+    </form>
+
+    <div class="data-section">
+        {% if no_data %}
+        <div class="alert-dark" role="alert">
+            ⚠️ No attendance data available for the selected filters.
+        </div>
+        {% endif %}
+
+        {% if attendance_data %}
+        <div class="data-header">
+            <div>
+                <h2>Attendance Records</h2>
+                <div class="subtitle">
+                    {{ selected_date }}{% if selected_class and selected_class != 'All' %} · {{ selected_class }}{%
+                    endif %}
+                </div>
+            </div>
+            <form action="/download_csv" method="POST" style="margin:0;">
+                <input type="hidden" name="selected_date" value="{{ selected_date }}">
+                <input type="hidden" name="selected_class" value="{{ selected_class }}">
+                <button type="submit" class="btn-download">⬇ Download CSV</button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Roll Number</th>
+                        <th>Name</th>
+                        <th>Class / Period</th>
+                        <th>Time</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for roll_number, name, class_name, time, date in attendance_data %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><strong>{{ roll_number }}</strong></td>
+                        <td>{{ name }}</td>
+                        <td><span class="badge-class">{{ class_name }}</span></td>
+                        <td>{{ time }}</td>
+                        <td>{{ date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="total-count">
+            <span>Total Present</span>
+            <strong>{{ attendance_data|length }}</strong>
+        </div>
+
+        <!-- ── Step 5: Send Attendance Emails ─────────────────────────────── -->
+        <div class="email-section">
+            <div class="email-section-header" onclick="toggleEmailPanel()">
+                <div class="email-section-title">
+                    📧 Send Attendance Emails
+                    <span class="email-section-sub">— Notify all registered students (requires internet)</span>
+                </div>
+                <span class="email-toggle-icon" id="emailToggleIcon">▼</span>
+            </div>
+
+            <div class="email-body" id="emailBody">
+                <p class="email-desc">
+                    Sends a <strong style="color:var(--text-primary);">Present ✅</strong> or
+                    <strong style="color:var(--text-primary);">Absent ❌</strong> email to
+                    <em>every registered student</em> for the period
+                    <strong style="color:var(--purple);">{{ selected_class if selected_class and selected_class != 'All'
+                        else 'All' }}</strong>
+                    on <strong style="color:var(--purple);">{{ selected_date }}</strong>.
+                    Students not detected by the camera are marked Absent.
+                </p>
+
+                <div class="email-fields">
+                    <div class="email-field">
+                        <label>Sender Gmail</label>
+                        <input type="email" id="senderEmail" value="{{ teacher_email }}" placeholder="sender@gmail.com">
+                    </div>
+                    <div class="email-field">
+                        <label>Gmail App Password</label>
+                        <input type="password" id="senderPassword" placeholder="xxxx xxxx xxxx xxxx">
+                        <span class="hint">
+                            Use a 16-char App Password — <em>not</em> your regular Gmail password.<br>
+                            Generate one at
+                            <a href="https://myaccount.google.com/apppasswords" target="_blank">
+                                myaccount.google.com/apppasswords
+                            </a>
+                        </span>
+                    </div>
+                </div>
+
+                <button class="btn-send-email" id="sendEmailBtn" onclick="sendEmails()">
+                    <span class="email-spinner" id="emailSpinner"></span>
+                    <span id="sendBtnText">📨 Send Emails to All Students</span>
+                </button>
+
+                <div class="email-results" id="emailResults"></div>
+            </div>
+        </div>
+        <!-- ─────────────────────────────────────────────────────────────────── -->
+
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+    <script>
+        /* ── Toggle email panel ── */
+        function toggleEmailPanel() {
+            const body = document.getElementById('emailBody');
+            const icon = document.getElementById('emailToggleIcon');
+            body.classList.toggle('open');
+            icon.classList.toggle('open');
+        }
+
+        /* ── Auto-load saved password only (sender email comes from logged-in teacher) ── */
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/email_config');
+                const cfg = await res.json();
+                // Only load saved password — sender email is already set to logged-in teacher
+                if (cfg.sender_password) {
+                    const pwdEl = document.getElementById('senderPassword');
+                    if (pwdEl) pwdEl.value = cfg.sender_password;
+                }
+            } catch (_) { }
+        });
+
+        /* ── Send bulk emails ── */
+        async function sendEmails() {
+            const senderEmail = document.getElementById('senderEmail').value.trim();
+            const senderPassword = document.getElementById('senderPassword').value.trim();
+            const btn = document.getElementById('sendEmailBtn');
+            const spinner = document.getElementById('emailSpinner');
+            const btnText = document.getElementById('sendBtnText');
+            const resultsDiv = document.getElementById('emailResults');
+
+            if (!senderPassword) {
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = `<div class="email-error-msg">⚠️ Please enter your Gmail App Password before sending.</div>`;
+                return;
+            }
+
+            // Loading state
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            btnText.textContent = 'Sending…';
+            resultsDiv.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('date', '{{ selected_date }}');
+            formData.append('class_name', '{{ selected_class }}');
+            formData.append('sender_email', senderEmail);
+            formData.append('sender_password', senderPassword);
+
+            try {
+                const resp = await fetch('/send_emails', { method: 'POST', body: formData });
+                const data = await resp.json();
+
+                resultsDiv.style.display = 'block';
+
+                // Top-level error (missing field validation)
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="email-error-msg">❌ ${data.error}</div>`;
+                    return;
+                }
+
+                // Auth / connection error before any emails were sent
+                if (data.total === 0 && data.details && data.details.length > 0 && data.details[0].status === 'error') {
+                    const errMsg = data.details[0].message || 'Unknown error.';
+                    resultsDiv.innerHTML = `<div class="email-error-msg">❌ ${errMsg}</div>`;
+                    return;
+                }
+
+                // Build summary
+                let html = `
+                    <div class="email-summary-bar">
+                        <span class="email-summary-pill pill-total">📋 Total students: ${data.total}</span>
+                        <span class="email-summary-pill pill-sent">✅ Emails sent: ${data.sent}</span>
+                        ${data.failed > 0 ? `<span class="email-summary-pill pill-failed">❌ Failed: ${data.failed}</span>` : ''}
+                    </div>
+                    <div class="email-result-list">`;
+
+                for (const d of (data.details || [])) {
+                    let badgeClass, badgeText;
+                    if (d.status === 'present') { badgeClass = 'badge-present'; badgeText = '✅ Present'; }
+                    else if (d.status === 'absent') { badgeClass = 'badge-absent'; badgeText = '❌ Absent'; }
+                    else if (d.status === 'error') { badgeClass = 'badge-error'; badgeText = '⚠ Error'; }
+                    else { badgeClass = 'badge-skipped'; badgeText = 'Skipped'; }
+
+                    html += `
+                        <div class="email-result-item" title="${d.message}">
+                            <span class="result-name">${d.name}</span>
+                            <span class="result-email">${d.email}</span>
+                            <span class="result-badge ${badgeClass}">${badgeText}</span>
+                        </div>`;
+                }
+
+                html += `</div>`;
+                resultsDiv.innerHTML = html;
+
+            } catch (err) {
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = `<div class="email-error-msg">❌ Network error: ${err.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+                btnText.textContent = '📨 Send Emails to All Students';
+            }
+        }
+    </script>
+</body>
+
+</html>

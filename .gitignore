@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+.venv/
+ENV/
+env/
+
+# Project Specific Data & Database
+data/data_faces_from_camera/*
+!data/data_faces_from_camera/.gitkeep
+data/features_*.csv
+attendance.db
+
+# Logs
+*.log
+attendance_taker_debug.log
+
+# IDEs and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Dlib models (If using Git LFS or external download, keep these ignored)
+# Uncomment the below line if you don't want to upload the 100MB+ model files to GitHub
+# data/data_dlib/*.dat
